@@ -1,0 +1,3 @@
+# Blog 1
+
+Not written yet. Will update sometime soon; hopefully...

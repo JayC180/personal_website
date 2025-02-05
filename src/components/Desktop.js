@@ -4,6 +4,7 @@ import Dock from "./Dock";
 import Window from "./Window";
 import FileManager from "./FileManager";
 import Terminal from "./Terminal";
+import DesktopOverlay from "./DesktopOverlay";
 
 const Desktop = () => {
     const [windows, setWindows] = useState([]);
@@ -76,6 +77,7 @@ const Desktop = () => {
         >
             <TopBar />
             <Dock openWindow={openWindow} windows={windows} />
+            <DesktopOverlay openWindow={openWindow} />
             {windows
                 .sort((a, b) => a.zIndex - b.zIndex) // sort windows by z-index
                 .map(
@@ -102,7 +104,7 @@ const Desktop = () => {
                                 {win.type === "files" && <FileManager />}
                                 {win.type === "terminal" && <Terminal />}
                                 {win.type === "settings" && (
-                                    <div>Will be implemented in future...</div>
+                                    <div>To be implemented...</div>
                                 )}
                             </Window>
                         )

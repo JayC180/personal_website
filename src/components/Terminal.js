@@ -1,124 +1,95 @@
 // Updated Terminal with fixes and placeholders for new commands
 import React, { useState } from "react";
 import ReactTerminal from "react-console-emulator";
+import { fileSystem, File, Folder } from "./FileSystem";
+import MarkdownViewer from "./MarkdownViewer";
 
-class File {
-    constructor(name, type, owner = "guest", group = "guest") {
-        this.name = name;
-        this.type = type;
-        this.permissions = type === "folder" ? "dr--r--r--" : "-r--r--r--";
-        this.owner = owner;
-        this.group = group;
-        this.size = 1024;
-        this.lastModified = "Jan 09 19:30";
-        this.linkName = name
-    }
+function hasReadPermission(path) {
+    const file = getFileAtPath(path);
+    return file && file.permissions[7] === "r";
 }
 
-class Folder extends File {
-    constructor(name, parent, children = {}, owner = "guest", group = "guest", permissions="dr--r--r--", linkName=name) {
-        super(name, "folder", owner, group);
-        this.parent = parent;
-        this.children = children;
-        this.size = 4096;
-        this.permissions = permissions;
-        this.linkName = linkName;
+function getFileAtPath(path) {
+    const parts = path.split("/").filter(Boolean);
+    let current = fileSystem["/"];
+    for (const part of parts) {
+        if (!(current instanceof Object) || !current.children[part]) {
+            return null;
+        }
+        current = current.children[part];
     }
-
-    addChild(file) {
-        this.children[file.name] = file;
-    }
-
-    getChildren() {
-        return Object.values(this.children);
-    }
+    return current;
 }
 
-const rootFolder = new Folder("root", null, {}, "root", "root", );
-const homeFolder = new Folder("home", rootFolder, {}, "root", "root");
-const guestFolder = new Folder("guest", homeFolder);
+function normalizePath(path) {
+    // split and remove parts
+    const parts = path.split("/").filter(Boolean);
+    const resolvedParts = [];
 
-// Populate file system
-const desktopFolder = new Folder("Desktop", guestFolder);
-const documentsFolder = new Folder("Documents", guestFolder);
-documentsFolder.addChild(new File("resume.pdf", "file"));
-documentsFolder.addChild(new File("notes.txt", "file"));
-const projectsFolder = new Folder("Projects", guestFolder);
-projectsFolder.addChild(new File("project1.zip", "file"));
+    for (const part of parts) {
+        if (part === ".") {
+            continue;
+        } else if (part === "..") {
+            if (resolvedParts.length > 0) {
+                resolvedParts.pop();
+            }
+        } else {
+            // regular path
+            resolvedParts.push(part);
+        }
+    }
 
-// Add folders to guest
-guestFolder.addChild(desktopFolder);
-guestFolder.addChild(documentsFolder);
-guestFolder.addChild(projectsFolder);
+    const resolvedPath = "/" + resolvedParts.join("/");
+    return hasReadPermission(resolvedPath) ? resolvedPath : "Permission denied";
+}
 
-// Add folders to home
-homeFolder.addChild(guestFolder);
-
-// Add folders to root
-rootFolder.addChild(homeFolder);
-rootFolder.addChild(new Folder("bin", rootFolder, {}, "root", "root"));
-rootFolder.addChild(new Folder("boot", rootFolder, {}, "root", "root"));
-rootFolder.addChild(new Folder("etc", rootFolder, {}, "root", "root"));
-rootFolder.addChild(new Folder("opt", rootFolder, {}, "root", "root"));
-rootFolder.addChild(new Folder("usr", rootFolder, {}, "root", "root"));
-
-const fileSystem = {
-    "/": rootFolder,
-    "/home": homeFolder,
-    "/home/guest": guestFolder,
-    "/home/guest/Desktop": desktopFolder,
-    "/home/guest/Documents": documentsFolder,
-    "/home/guest/Projects": projectsFolder,
-};
 
 function resolvePath(currentPath, targetPath) {
-    if (targetPath.startsWith("/")) return targetPath; // absolute path
+    if (targetPath.startsWith("/")) {
+        return hasReadPermission(targetPath) ? targetPath : "Permission denied"; // absolute path
+    }
 
     // /home/guest
     if (targetPath.startsWith("~")) {
-        const path = targetPath.slice(1)
-        if (path === '/.') return "/home/guest"
-        if (path === '/..') return "/home"
-        return "/home/guest" + path;
+        const path = "/home/guest";
+        const relativePath = targetPath.slice(1); // remove ~
+        return normalizePath(path + relativePath);
     }
 
-    const pathParts = currentPath.split("/").filter(Boolean);
-    const targetParts = targetPath.split("/").filter(Boolean);
-
-    for (const part of targetParts) {
-        if (part === ".") continue;
-        else if (part === "..") pathParts.pop();
-        else pathParts.push(part);
-    }
-
-    return "/" + pathParts.join("/");
+    // all other cases
+    return normalizePath(currentPath + "/" + targetPath);
 }
 
 const Terminal = () => {
     const [currentPath, setCurrentPath] = useState("/home/guest");
+    const [selectedMarkdown, setSelectedMarkdown] = useState(null);
 
     const commands = {
         echo: {
-            description: "Echo a passed string.",
+            description: "Echo a passed string",
             usage: "echo <string>",
             fn: (...args) => args.join(" "),
         },
 
         pwd: {
-            description: "Print the current directory.",
+            description: "Print the current directory",
             usage: "pwd",
             fn: () => currentPath,
         },
 
         ls: {
-            description: "List contents in the current directory.",
+            description: "List contents in the current directory",
             usage: "ls [-a] [-l]",
             fn: (...args) => {
                 const showHidden = args.includes("-a");
                 const longFormat = args.includes("-l");
-                const pathArg = args.find((arg) => !arg.startsWith("-")) || currentPath;
+                const pathArg =
+                    args.find((arg) => !arg.startsWith("-")) || currentPath;
 
                 const targetPath = resolvePath(currentPath, pathArg);
+                if (targetPath === "Permission denied") {
+                    return "Permission denied, or path doesn't exist.";
+                }
                 const targetFolder = fileSystem[targetPath];
 
                 if (!targetFolder || !(targetFolder instanceof Folder)) {
@@ -138,9 +109,11 @@ const Terminal = () => {
                     return children
                         .map(
                             (child) =>
-                                `${child.permissions} ${child.type === "folder" ? 2 : 1} ${child.owner} ${child.group} ${
-                                    child.size
-                                } ${child.lastModified} ${child.linkName}`
+                                `${child.permissions} ${
+                                    child.type === "folder" ? 2 : 1
+                                } ${child.owner} ${child.group} ${child.size} ${
+                                    child.lastModified
+                                } ${child.linkName}`
                         )
                         .join("\n");
                 }
@@ -150,10 +123,13 @@ const Terminal = () => {
         },
 
         cd: {
-            description: "Change the current directory.",
+            description: "Change the current directory",
             usage: "cd <dir>",
             fn: (dir) => {
                 const targetPath = resolvePath(currentPath, dir);
+                if (targetPath === "Permission denied") {
+                    return "Permission denied, or path doesn't exist.";
+                }
                 const targetFolder = fileSystem[targetPath];
 
                 if (targetFolder && targetFolder instanceof Folder) {
@@ -166,55 +142,102 @@ const Terminal = () => {
         },
 
         whoami: {
-            description: "Print your username.",
+            description: "Print your username",
             usage: "whoami",
             fn: () => "guest",
         },
 
         cat: {
-            description: "View file contents.",
+            description: "View file contents",
             usage: "cat <file>",
             fn: () => "Function not implemented. But here's a cat ≽^•⩊•^≼",
         },
 
         touch: {
-            description: "Create a new file.",
+            description: "Create a new file",
             usage: "touch <file>",
-            fn: (filename) => `touch: cannot touch '${filename ? filename : ''}': Permission denied`,
+            fn: (filename) =>
+                `touch: cannot touch '${
+                    filename ? filename : ""
+                }': Permission denied`,
         },
 
         mkdir: {
-            description: "Create a new directory.",
+            description: "Create a new directory",
             usage: "mkdir <directory>",
-            fn: (dirname) => `mkdir: cannot create directory '${dirname ? dirname : ''}': Permission denied`,
+            fn: (dirname) =>
+                `mkdir: cannot create directory '${
+                    dirname ? dirname : ""
+                }': Permission denied`,
         },
 
         sudo: {
-            description: "Execute a command as root.",
+            description: "Execute a command as root",
             usage: "sudo <command>",
-            fn: () => "User is not in the sudoers group. This incident will be reported.",
+            fn: () =>
+                "User is not in the sudoers group. This incident will be reported.",
         },
 
         passwd: {
-            description: "Change passwords for user accounts.",
+            description: "Change passwords for user accounts",
             usage: "passwd [options] [LOGIN]",
             fn: () => "Haha. No.",
-        }
+        },
+
+        mdview: {
+            description: "For viewing Markdown files",
+            usage: "mdview <filepath>",
+            fn: (path) => {
+                if (!path) {
+                    return "Usage: mdview <filepath>";
+                }
+
+                const fullPath = resolvePath(currentPath, path);
+
+                if (fullPath === "Permission denied") {
+                    return `mdview: ${path}: Permission denied, or path doesn't exist.`;
+                }
+
+                const file = getFileAtPath(fullPath);
+
+                if (!file) {
+                    return `mdview: ${path}: No such file`;
+                }
+
+                if (!(file instanceof File) || !file.name.endsWith(".md")) {
+                    return `mdview: ${path}: Not a markdown file`;
+                }
+
+                setSelectedMarkdown(file.name);
+                return `Opening Markdown viewer for ${file.name}`;
+            },
+        },
     };
 
     return (
-        <ReactTerminal
-            commands={commands}
-            welcomeMessage={"Welcome to Jay's Terminal!"}
-            prompt="guest@jays-site:~$"
-            style={{
-                backgroundColor: "black",
-                color: "white",
-                width: "100%",
-                height: "100%",
-                opacity: 0.8,
-            }}
-        />
+        <div
+            style={{ display: "flex", flexDirection: "column", height: "96%" }}
+        >
+            <ReactTerminal
+                commands={commands}
+                welcomeMessage={
+                    "Welcome to Jay's Terminal! Type 'help' for help."
+                }
+                prompt="guest@jays-site:~$"
+                style={{
+                    backgroundColor: "black",
+                    color: "white",
+                    flex: 1,
+                    opacity: 0.8,
+                }}
+            />
+            {selectedMarkdown && (
+                <MarkdownViewer
+                    filename={selectedMarkdown}
+                    onClose={() => setSelectedMarkdown(null)}
+                />
+            )}
+        </div>
     );
 };
 
