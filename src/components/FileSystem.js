@@ -37,6 +37,7 @@ const guestFolder = new Folder("guest", homeFolder, {}, "guest", "guest", "dr-xr
 // populate guest home files
 const desktopFolder = new Folder("Desktop", guestFolder);
 desktopFolder.addChild(new File("welcome.md", "file"));
+desktopFolder.addChild(new File("about me.md", "file"));
 // desktopFolder.addChild(new File("welcome1.md", "file"));
 // desktopFolder.addChild(new File("welcome2.md", "file"));
 // desktopFolder.addChild(new File("welcome3.md", "file"));
@@ -60,7 +61,7 @@ documentsFolder.addChild(new File("jay's resume.pdf", "file"));
 documentsFolder.addChild(new File("test.md", "file"));
 
 const projectsFolder = new Folder("Projects", guestFolder);
-projectsFolder.addChild(new File("project1.zip", "file"));
+projectsFolder.addChild(new File("projects.md", "file"));
 
 const blogFolder = new Folder('Blog')
 blogFolder.addChild(new File('blog 1.md', 'file'));
