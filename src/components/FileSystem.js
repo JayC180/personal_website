@@ -37,6 +37,23 @@ const guestFolder = new Folder("guest", homeFolder, {}, "guest", "guest", "dr-xr
 // populate guest home files
 const desktopFolder = new Folder("Desktop", guestFolder);
 desktopFolder.addChild(new File("welcome.md", "file"));
+// desktopFolder.addChild(new File("welcome1.md", "file"));
+// desktopFolder.addChild(new File("welcome2.md", "file"));
+// desktopFolder.addChild(new File("welcome3.md", "file"));
+// desktopFolder.addChild(new File("welcome4.md", "file"));
+// desktopFolder.addChild(new File("welcome5.md", "file"));
+// desktopFolder.addChild(new File("welcome6.md", "file"));
+// desktopFolder.addChild(new File("welcome7.md", "file"));
+// desktopFolder.addChild(new File("welcome8.md", "file"));
+// desktopFolder.addChild(new File("welcome9.md", "file"));
+// desktopFolder.addChild(new File("welcome0.md", "file"));
+// desktopFolder.addChild(new File("welcome10.md", "file"));
+// desktopFolder.addChild(new File("welcome11.md", "file"));
+// desktopFolder.addChild(new File("welcome12.md", "file"));
+// desktopFolder.addChild(new File("welcome13.md", "file"));
+// desktopFolder.addChild(new File("welcome14.md", "file"));
+// desktopFolder.addChild(new File("welcome15.md", "file"));
+// desktopFolder.addChild(new File("welcome16.md", "file"));
 
 const documentsFolder = new Folder("Documents", guestFolder);
 documentsFolder.addChild(new File("jay's resume.pdf", "file"));

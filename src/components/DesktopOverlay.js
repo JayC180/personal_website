@@ -40,7 +40,7 @@ const DesktopOverlay = () => {
                     gridTemplateRows: "repeat(auto-fill, 80px)", // auto fill new columns
                     gap: "20px",
                     padding: "20px",
-                    height: "calc(90vh - 40px)", // 90%: doesnt touch dock; 40 px: top bar
+                    height: "calc(100% - 40px)", // leave space for dock and top bar
                     alignContent: "start", // start
                     justifyContent: "start", // alight left
                     pointerEvents: "auto",
