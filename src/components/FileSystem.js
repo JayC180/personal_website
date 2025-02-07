@@ -2,7 +2,7 @@ class File {
     constructor(name, type, owner = "guest", group = "guest", linkName = null) {
         this.name = name;
         this.type = type;
-        this.permissions = type === "folder" ? "dr--r--r--" : "-r--r--r--";
+        this.permissions = type === "folder" ? "dr--r--r--" : type === "symlink" ? "lr--r--r--" : "-r--r--r--";
         this.owner = owner;
         this.group = group;
         this.size = 1024;
