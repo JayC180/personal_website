@@ -8,7 +8,7 @@ import MarkdownViewer from "./MarkdownViewer";
 const DesktopOverlay = () => {
     const desktopFolder = fileSystem["/home/guest/Desktop"];
     const desktopItems = desktopFolder.getChildren();
-    const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedFile, setSelectedFile] = useState("welcome.md");
     const [selectedFolder, setSelectedFolder] = useState(null);
 
     const handleClick = (item) => {
