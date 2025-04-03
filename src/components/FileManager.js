@@ -5,7 +5,7 @@ import {
     FaChevronDown,
     FaChevronRight,
 } from "react-icons/fa";
-import { fileSystem, File, Folder } from "./FileSystem";
+import { fileSystem, Folder, resolveSymlink } from "./FileSystem";
 import MarkdownViewer from "./MarkdownViewer";
 
 const shortcuts = {
@@ -35,7 +35,12 @@ const FileManager = () => {
 
     const getCurrentFolderContent = () => {
         const currentFolder = fileSystem[currentPath];
-        return currentFolder ? currentFolder.getChildren() : [];
+        if (!currentFolder || !(currentFolder instanceof Folder)) {
+            return [];
+        }
+        return currentFolder
+            .getChildren()
+            .map((child) => resolveSymlink(child, currentPath));
     };
 
     const handleShortcutClick = (path) => {
@@ -45,7 +50,10 @@ const FileManager = () => {
         }
     };
 
-    const breadcrumbs = currentPath === "Network" ? ["Network"] : currentPath.split("/").filter(Boolean);
+    const breadcrumbs =
+        currentPath === "Network"
+            ? ["Network"]
+            : currentPath.split("/").filter(Boolean);
 
     const handleAuthenticationPopup = () => {
         alert("Authentication required to access this folder.");
@@ -191,7 +199,6 @@ const FileManager = () => {
                                             ? "#fab387"
                                             : "#cdd6f4",
                                 }}
-                    
                             >
                                 <FaFolder style={{ marginRight: "8px" }} />
                                 Network

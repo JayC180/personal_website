@@ -1,7 +1,13 @@
 // Updated Terminal with fixes and placeholders for new commands
 import React, { useState } from "react";
 import ReactTerminal from "react-console-emulator";
-import { fileSystem, File, Folder } from "./FileSystem";
+import {
+    fileSystem,
+    File,
+    Folder,
+    getFileAtPath,
+    resolveSymlink,
+} from "./FileSystem";
 import MarkdownViewer from "./MarkdownViewer";
 
 function hasReadPermission(path) {
@@ -9,17 +15,17 @@ function hasReadPermission(path) {
     return file && file.permissions[7] === "r";
 }
 
-function getFileAtPath(path) {
-    const parts = path.split("/").filter(Boolean);
-    let current = fileSystem["/"];
-    for (const part of parts) {
-        if (!(current instanceof Object) || !current.children[part]) {
-            return null;
-        }
-        current = current.children[part];
-    }
-    return current;
-}
+// function getFileAtPath(path) {
+//     const parts = path.split("/").filter(Boolean);
+//     let current = fileSystem["/"];
+//     for (const part of parts) {
+//         if (!(current instanceof Object) || !current.children[part]) {
+//             return null;
+//         }
+//         current = current.children[part];
+//     }
+//     return current;
+// }
 
 function normalizePath(path) {
     // split and remove parts
@@ -43,7 +49,6 @@ function normalizePath(path) {
     return hasReadPermission(resolvedPath) ? resolvedPath : "Permission denied";
 }
 
-
 function resolvePath(currentPath, targetPath) {
     if (targetPath.startsWith("/")) {
         return hasReadPermission(targetPath) ? targetPath : "Permission denied"; // absolute path
@@ -58,6 +63,38 @@ function resolvePath(currentPath, targetPath) {
 
     // all other cases
     return normalizePath(currentPath + "/" + targetPath);
+}
+
+function parseArguments(args) {
+    const parsedArgs = [];
+    let currArg = null;
+
+    for (const arg of args) {
+        if (currArg === null) {
+            // check if start with single or double quote
+            if (arg.startsWith("'") || arg.startsWith('"')) {
+                currArg = arg;
+            } else {
+                parsedArgs.push(arg);
+            }
+        } else {
+            // append till find close quote
+            currArg += " " + arg;
+            if (
+                (currArg.startsWith("'") && currArg.endsWith("'")) ||
+                (currArg.startsWith('"') && currArg.endsWith('"'))
+            ) {
+                parsedArgs.push(currArg.slice(1, -1)); // remove quotes
+                currArg = null;
+            }
+        }
+    }
+
+    if (currArg !== null) {
+        parsedArgs.push(currArg); // doesn't end with quote
+    }
+
+    return parsedArgs;
 }
 
 const Terminal = () => {
@@ -90,13 +127,16 @@ const Terminal = () => {
                 if (targetPath === "Permission denied") {
                     return "Permission denied, or path doesn't exist.";
                 }
-                const targetFolder = fileSystem[targetPath];
+
+                const targetFolder = getFileAtPath(targetPath);
 
                 if (!targetFolder || !(targetFolder instanceof Folder)) {
                     return `ls: cannot access '${pathArg}': No such file or directory`;
                 }
 
-                let children = targetFolder.getChildren();
+                let children = targetFolder
+                    .getChildren()
+                    .map((child) => resolveSymlink(child, targetPath));
                 if (showHidden) {
                     children = [
                         { name: ".", type: "folder" },
@@ -113,12 +153,18 @@ const Terminal = () => {
                                     child.type === "folder" ? 2 : 1
                                 } ${child.owner} ${child.group} ${child.size} ${
                                     child.lastModified
-                                } ${child.linkName}`
+                                } ${child.linkName || child.name}`
                         )
                         .join("\n");
                 }
 
-                return children.map((child) => child.name).join(" ");
+                return children
+                    .map((child) =>
+                        child.name.includes(" ")
+                            ? `'${child.name}'`
+                            : child.name
+                    )
+                    .join(" ");
             },
         },
 
@@ -130,7 +176,8 @@ const Terminal = () => {
                 if (targetPath === "Permission denied") {
                     return "Permission denied, or path doesn't exist.";
                 }
-                const targetFolder = fileSystem[targetPath];
+
+                const targetFolder = getFileAtPath(targetPath);
 
                 if (targetFolder && targetFolder instanceof Folder) {
                     setCurrentPath(targetPath);
@@ -187,10 +234,13 @@ const Terminal = () => {
         mdview: {
             description: "For viewing Markdown files",
             usage: "mdview <filepath>",
-            fn: (path) => {
-                if (!path) {
+            fn: (...args) => {
+                const parsedArgs = parseArguments(args);
+                if (parsedArgs.length === 0) {
                     return "Usage: mdview <filepath>";
                 }
+
+                const path = parsedArgs[0];
 
                 const fullPath = resolvePath(currentPath, path);
 

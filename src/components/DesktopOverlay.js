@@ -1,6 +1,6 @@
 import React from "react";
-import { FaFolder, FaFile } from "react-icons/fa";
-import { fileSystem, Folder } from "./FileSystem";
+import { FaFolder, FaFile, FaLink } from "react-icons/fa";
+import { fileSystem, Folder, resolveSymlink } from "./FileSystem";
 import { useState } from "react";
 import FileManager from "./FileManager";
 import MarkdownViewer from "./MarkdownViewer";
@@ -12,10 +12,11 @@ const DesktopOverlay = () => {
     const [selectedFolder, setSelectedFolder] = useState(null);
 
     const handleClick = (item) => {
-        if (item instanceof Folder) {
-            setSelectedFolder(item);
-        } else if (item.name.endsWith(".md")) {
-            setSelectedFile(item);
+        const resolvedItem = resolveSymlink(item, "/home/guest/Desktop");
+        if (resolvedItem instanceof Folder) {
+            setSelectedFolder(resolvedItem);
+        } else if (resolvedItem.name.endsWith(".md")) {
+            setSelectedFile(resolvedItem);
         } else {
             alert("Cannot open this file type.");
         }
@@ -59,7 +60,9 @@ const DesktopOverlay = () => {
                             textShadow: "1px 1px 3px black",
                         }}
                     >
-                        {item instanceof Folder ? (
+                        {item.linkName !== item.name ? (
+                            <FaLink size={50} color="#87CEEB" />
+                        ) : item instanceof Folder ? (
                             <FaFolder size={50} color="#FFD700" />
                         ) : (
                             <FaFile size={50} color="#ADD8E6" />
