@@ -8,8 +8,11 @@ import MarkdownViewer from "./MarkdownViewer";
 const DesktopOverlay = () => {
     const desktopFolder = fileSystem["/home/guest/Desktop"];
     const desktopItems = desktopFolder.getChildren();
-    const [selectedFile, setSelectedFile] = useState("welcome.md");
+
+    const welcome_md = fileSystem["/home/guest/Desktop/welcome.md"]
+    const [selectedFile, setSelectedFile] = useState(welcome_md);
     const [selectedFolder, setSelectedFolder] = useState(null);
+
 
     const handleClick = (item) => {
         const resolvedItem = resolveSymlink(item, "/home/guest/Desktop");
