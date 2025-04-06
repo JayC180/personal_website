@@ -1,6 +1,6 @@
 import React from "react";
 import { FaFolder, FaFile, FaLink } from "react-icons/fa";
-import { fileSystem, Folder, resolveSymlink } from "./FileSystem";
+import { fileSystem, Folder, resolveSymlink, getFileAtPath } from "./FileSystem";
 import { useState } from "react";
 import FileManager from "./FileManager";
 import MarkdownViewer from "./MarkdownViewer";
@@ -9,7 +9,7 @@ const DesktopOverlay = () => {
     const desktopFolder = fileSystem["/home/guest/Desktop"];
     const desktopItems = desktopFolder.getChildren();
 
-    const welcome_md = fileSystem["/home/guest/Desktop/welcome.md"]
+    const welcome_md = getFileAtPath("/home/guest/Desktop/welcome.md");
     const [selectedFile, setSelectedFile] = useState(welcome_md);
     const [selectedFolder, setSelectedFolder] = useState(null);
 
@@ -20,6 +20,7 @@ const DesktopOverlay = () => {
             setSelectedFolder(resolvedItem);
         } else if (resolvedItem.name.endsWith(".md")) {
             setSelectedFile(resolvedItem);
+            // console.log(selectedFile);
         } else {
             alert("Cannot open this file type.");
         }

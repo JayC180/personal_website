@@ -16,7 +16,7 @@ const MarkdownViewer = ({ filename, onClose }) => {
     const [content, setContent] = useState("");
     const [error, setError] = useState(null);
 
-    console.log(filename);
+    // console.log(filename);
 
     useEffect(() => {
         fetch(`/assets/${filename}`)
