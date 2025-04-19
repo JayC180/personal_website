@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import ReactTerminal from "react-console-emulator";
 import {
-    fileSystem,
     File,
     Folder,
     getFileAtPath,
@@ -266,7 +265,29 @@ const Terminal = () => {
 
     return (
         <div
-            style={{ display: "flex", flexDirection: "column", height: "96%" }}
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                height: "96%",
+                /* scrollbar */
+                scrollbarWidth: "thin",
+                scrollbarColor: "#585b70 #1e1e2e",
+                /* WebKit fallbacks */
+                "&::WebkitScrollbar": {
+                    width: "10px",
+                },
+                "&::WebkitScrollbarTrack": {
+                    background: "#1e1e2e",
+                },
+                "&::WebkitScrollbarThumb": {
+                    backgroundColor: "#585b70",
+                    borderRadius: "5px",
+                    border: "2px solid #1e1e2e",
+                },
+                "&::WebkitScrollbarThumb:hover": {
+                    backgroundColor: "#7f849c",
+                },
+            }}
         >
             <ReactTerminal
                 commands={commands}

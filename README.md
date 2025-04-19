@@ -6,11 +6,9 @@ A website that emulates a desktop environment is something that I have always wa
 URL: http://132.145.214.32:3000/
 
 ### Todo
-- [x] Actually implement symbolic link in the file system
-- [X] Allow space in file names (support the use of single or double quote in terminal)
+- [ ] Add more stuff to Settings
 - [ ] Set individual file properties
 - [ ] Organize blogs and stuff
-- [ ] Settings
 - [ ] Maybe a login screen?
 - [ ] Add more stuff into terminal
 - [ ] Make a prettier alert
@@ -28,6 +26,7 @@ URL: http://132.145.214.32:3000/
 - File System
   - Emulates UNIX file system, contains properties like rwx permissions
   - Symbolic links
+  - Allows space in file names
 - File Manager/Explorer
   - Expandable side menu
   - Breadcrumbs
@@ -35,3 +34,6 @@ URL: http://132.145.214.32:3000/
   - Supports multiple UNIX commands
   - File system support
   - Supports file/folder with spaces in name
+- Settings
+  - Selectable wallpapers
+  - Allows uploading custom wallpaper, which gets saved in LocalStorage

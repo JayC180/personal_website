@@ -10,7 +10,6 @@ import {
     DialogTitle,
     Button,
 } from "@mui/material";
-import shadows from "@mui/material/styles/shadows";
 
 const MarkdownViewer = ({ filename, onClose }) => {
     const [content, setContent] = useState("");
@@ -133,6 +132,24 @@ const MarkdownViewer = ({ filename, onClose }) => {
                 style={{
                     backgroundColor: "#f5e0dc",
                     color: "#1e1e2e",
+                    /* scrollbar */
+                    scrollbarWidth: "thin",
+                    scrollbarColor: "#b4befe #f5e0dc",
+                    /* WebKit fallbacks */
+                    "&::WebkitScrollbar": {
+                        width: "10px",
+                    },
+                    "&::WebkitScrollbarTrack": {
+                        background: "#f5e0dc",
+                    },
+                    "&::WebkitScrollbarThumb": {
+                        backgroundColor: "#b4befe",
+                        borderRadius: "5px",
+                        border: "2px solid #f5e0dc",
+                    },
+                    "&::WebkitScrollbarThumb:hover": {
+                        backgroundColor: "#7f849c",
+                    },
                 }}
             >
                 {error ? (
