@@ -1,13 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import TopBar from "./TopBar";
 import Dock from "./Dock";
 import Window from "./Window";
 import FileManager from "./FileManager";
 import Terminal from "./Terminal";
+import Settings from "./Settings";
 import DesktopOverlay from "./DesktopOverlay";
 
 const Desktop = () => {
     const [windows, setWindows] = useState([]);
+    const [currentWallpaper, setCurrentWallpaper] = useState(() => {
+        // init render, load from localstorage
+        const savedWallpaper = localStorage.getItem("wallpaper");
+        if (savedWallpaper) {
+            try {
+                const { type, url } = JSON.parse(savedWallpaper);
+                if (type === "local" || type === "remote") {
+                    return url;
+                }
+            } catch (e) {
+                console.error("Failed to parse wallpaper", e);
+            }
+        }
+        // default
+        return "https://raw.githubusercontent.com/zhichaoh/catppuccin-wallpapers/main/landscapes/evening-sky.png";
+    });
+
+    const setWallpaperWithStorage = useCallback((wallpaper) => {
+        try {
+            localStorage.setItem("wallpaper", JSON.stringify({
+                type: wallpaper.isLocal ? "local" : "remote",
+                url: wallpaper.url,
+                name: wallpaper.name
+            }));
+            setCurrentWallpaper(wallpaper.url);
+        } catch (e) {
+            console.error("Failed to save wallpaper", e);
+            if (e.name === 'QuotaExceededError') {
+                alert("Cannot save wallpaper - storage limit exceeded (max 5MB)");
+            }
+        }
+    }, []);
+
 
     const openWindow = (type) => {
         // check if already opened
@@ -51,9 +85,7 @@ const Desktop = () => {
 
     const updatePosition = (type, position) => {
         setWindows((prev) =>
-            prev.map((win) =>
-                win.type === type ? { ...win, position } : win
-            )
+            prev.map((win) => (win.type === type ? { ...win, position } : win))
         );
     };
 
@@ -69,8 +101,9 @@ const Desktop = () => {
     return (
         <div
             style={{
-                backgroundImage: `url('https://raw.githubusercontent.com/zhichaoh/catppuccin-wallpapers/refs/heads/main/landscapes/evening-sky.png')`,
+                backgroundImage: `url('${currentWallpaper}')`,
                 backgroundSize: "cover",
+                backgroundPosition: "center",
                 height: "100vh",
                 width: "100vw",
             }}
@@ -98,13 +131,19 @@ const Desktop = () => {
                                 position={win.position}
                                 zIndex={win.zIndex}
                                 onDragStop={(e, data) =>
-                                    updatePosition(win.type, { x: data.x, y: data.y })
+                                    updatePosition(win.type, {
+                                        x: data.x,
+                                        y: data.y,
+                                    })
                                 }
                             >
                                 {win.type === "files" && <FileManager />}
                                 {win.type === "terminal" && <Terminal />}
                                 {win.type === "settings" && (
-                                    <div>To be implemented...</div>
+                                    <Settings
+                                        currentWallpaper={currentWallpaper}
+                                        setWallpaper={setWallpaperWithStorage}
+                                    />
                                 )}
                             </Window>
                         )

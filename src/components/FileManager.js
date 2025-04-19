@@ -109,6 +109,24 @@ const FileManager = () => {
                     borderRight: "1px solid #313244",
                     overflowY: "auto",
                     backgroundColor: "#181825",
+                    /* scrollbar */
+                    scrollbarWidth: "thin",
+                    scrollbarColor: "#585b70 #1e1e2e",
+                    /* WebKit fallbacks */
+                    "&::WebkitScrollbar": {
+                        width: "10px",
+                    },
+                    "&::WebkitScrollbarTrack": {
+                        background: "#1e1e2e",
+                    },
+                    "&::WebkitScrollbarThumb": {
+                        backgroundColor: "#585b70",
+                        borderRadius: "5px",
+                        border: "2px solid #1e1e2e",
+                    },
+                    "&::WebkitScrollbarThumb:hover": {
+                        backgroundColor: "#7f849c",
+                    },
                 }}
             >
                 <h3 style={{ marginBottom: "20px", color: "#f38ba8" }}>
@@ -269,7 +287,7 @@ const FileManager = () => {
                                     <FaFile
                                         style={{
                                             marginRight: "8px",
-                                            color: "#f9e2af",
+                                            color: "#f5e0dc",
                                         }}
                                     />
                                 )}

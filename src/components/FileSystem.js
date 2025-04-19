@@ -24,12 +24,34 @@ class Folder extends File {
         super(name, "folder", owner, group, linkName);
         this.parent = parent;
         this.children = children;
-        this.size = 4096;
         this.permissions = permissions;
+        this.updateFolderSize();
     }
 
     addChild(file) {
         this.children[file.name] = file;
+        file.parent = this;
+        this.updateFolderSize();
+        this.updateParent();
+    }
+
+
+    updateFolderSize() {
+        // base folder size + sum of all children sizes
+        let totalSize = 4096; // min folder size
+        for (const child of Object.values(this.children)) {
+            totalSize += child.size;
+        }
+        this.size = totalSize;
+    }
+
+    updateParent() {
+        // update tree
+        let current = this.parent;
+        while (current) {
+            current.updateFolderSize();
+            current = current.parent;
+        }
     }
 
     getChildren() {

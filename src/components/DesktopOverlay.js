@@ -1,5 +1,5 @@
 import React from "react";
-import { FaFolder, FaFile, FaLink } from "react-icons/fa";
+import { MdDriveFileMove, MdInsertDriveFile, MdFileOpen } from "react-icons/md";
 import { fileSystem, Folder, resolveSymlink, getFileAtPath } from "./FileSystem";
 import { useState } from "react";
 import FileManager from "./FileManager";
@@ -12,7 +12,6 @@ const DesktopOverlay = () => {
     const welcome_md = getFileAtPath("/home/guest/Desktop/welcome.md");
     const [selectedFile, setSelectedFile] = useState(welcome_md);
     const [selectedFolder, setSelectedFolder] = useState(null);
-
 
     const handleClick = (item) => {
         const resolvedItem = resolveSymlink(item, "/home/guest/Desktop");
@@ -65,11 +64,11 @@ const DesktopOverlay = () => {
                         }}
                     >
                         {item.linkName !== item.name ? (
-                            <FaLink size={50} color="#87CEEB" />
+                            <MdFileOpen size={50} color="#87CEEB" />
                         ) : item instanceof Folder ? (
-                            <FaFolder size={50} color="#FFD700" />
+                            <MdDriveFileMove size={50} color="#FFD700" />
                         ) : (
-                            <FaFile size={50} color="#ADD8E6" />
+                            <MdInsertDriveFile size={50} color="#ADD8E6" />
                         )}
                         <span>{item.name}</span>
                     </div>
