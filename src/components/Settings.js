@@ -1,21 +1,18 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { FaImage, FaPalette, FaDesktop, FaUpload } from "react-icons/fa";
 
-// max local storage size; 5mb
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+// max local storage size; 10 mb
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 const Settings = ({ currentWallpaper, setWallpaper }) => {
     const [activeTab, setActiveTab] = useState("wallpaper");
     const [localWallpaper, setLocalWallpaper] = useState(() => {
-        const saved = localStorage.getItem("wallpaper");
+        const saved = localStorage.getItem("customWallpaper");
         if (saved) {
             try {
-                const { type, url } = JSON.parse(saved);
-                if (type === "local") {
-                    return { name: "Custom Wallpaper", url, isLocal: true };
-                }
+                return JSON.parse(saved);
             } catch (e) {
-                console.error("Parse saved wallpaper fail", e);
+                console.error("Parse saved custom wallpaper fail", e);
             }
         }
         return null;
@@ -64,6 +61,70 @@ const Settings = ({ currentWallpaper, setWallpaper }) => {
         []
     );
 
+    const CustomWallpaperSettings = ({ wallpaper, onChange }) => {
+        console.log("CustomWallpaperSettings rendered", wallpaper);
+        const handleModeChange = (mode) => {
+            onChange({
+                ...wallpaper,
+                displayMode: mode,
+            });
+        };
+
+        const handleColorChange = (e) => {
+            const newColor = e.target.value;
+            console.log("Color changed:", newColor);
+            onChange({
+                ...wallpaper,
+                bgColor: newColor,
+            });
+        };
+
+        return (
+            <div style={{ marginTop: "15px" }}>
+                {/* <div style={{ marginBottom: "10px" }}>
+                    <label style={{ display: "block", marginBottom: "5px" }}>
+                        Background Color:
+                    </label>
+                    <input
+                        type="color"
+                        value={wallpaper.bgColor || "#313244"}
+                        onChange={handleColorChange}
+                        //   onMouseDown={(e) => e.stopPropagation()}
+                        //   onClick={(e) => e.stopPropagation()}
+                        style={{ width: "100%" }}
+                    />
+                </div> */}
+                <div>
+                    <label style={{ display: "block", marginBottom: "5px" }}>
+                        Display Mode:
+                    </label>
+                    <div style={{ display: "flex", gap: "10px" }}>
+                        {["cover", "contain"].map((mode) => (
+                            <button
+                                key={mode}
+                                onClick={() => handleModeChange(mode)}
+                                style={{
+                                    flex: 1,
+                                    padding: "8px",
+                                    backgroundColor:
+                                        wallpaper.displayMode === mode
+                                            ? "#585b70"
+                                            : "#45475a",
+                                    color: "#cdd6f4",
+                                    border: "none",
+                                    borderRadius: "4px",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                {mode === "cover" ? "Fill" : "Fit"}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -74,7 +135,7 @@ const Settings = ({ currentWallpaper, setWallpaper }) => {
         }
 
         if (file.size > MAX_FILE_SIZE) {
-            alert("File size exceeds 5MB limit");
+            alert("File size exceeds 10MB limit");
             return;
         }
 
@@ -82,9 +143,11 @@ const Settings = ({ currentWallpaper, setWallpaper }) => {
         reader.onload = (event) => {
             const dataUrl = event.target.result;
             const customWallpaper = {
-                name: 'Custom Wallpaper',
+                name: "Custom Wallpaper",
                 url: dataUrl,
-                isLocal: true
+                isLocal: true,
+                bgColor: "#313244", // default bg color
+                displayMode: "cover", // default cover
             };
             setWallpaper(customWallpaper);
             setLocalWallpaper(customWallpaper);
@@ -251,14 +314,27 @@ const Settings = ({ currentWallpaper, setWallpaper }) => {
                                 Choose File
                             </label>
                             {localWallpaper && (
-                                <div
-                                    style={{
-                                        marginTop: "10px",
-                                        fontStyle: "italic",
-                                    }}
-                                >
-                                    Current custom wallpaper loaded
-                                </div>
+                                <>
+                                    <div
+                                        style={{
+                                            marginTop: "10px",
+                                            fontStyle: "italic",
+                                        }}
+                                    >
+                                        Custom wallpaper loaded
+                                    </div>
+                                    <CustomWallpaperSettings
+                                        wallpaper={localWallpaper}
+                                        onChange={(settings) => {
+                                            const updated = {
+                                                ...localWallpaper,
+                                                ...settings,
+                                            };
+                                            setLocalWallpaper(updated);
+                                            setWallpaper(updated);
+                                        }}
+                                    />
+                                </>
                             )}
                         </div>
 
@@ -273,43 +349,62 @@ const Settings = ({ currentWallpaper, setWallpaper }) => {
                         >
                             {/* custom wallpaper */}
                             {localWallpaper && (
+                                <div
+                                    key="custom-wallpaper"
+                                    onClick={() =>
+                                        handleWallpaperSelect(localWallpaper)
+                                    }
+                                    style={{
+                                        cursor: "pointer",
+                                        borderRadius: "8px",
+                                        overflow: "hidden",
+                                        border: `2px solid ${
+                                            currentWallpaper ===
+                                            localWallpaper.url
+                                                ? "#fab387"
+                                                : "transparent"
+                                        }`,
+                                        transition: "border-color 0.2s",
+                                    }}
+                                >
                                     <div
-                                        key="custom-wallpaper"
-                                        onClick={() => handleWallpaperSelect(localWallpaper)}
                                         style={{
-                                            cursor: "pointer",
-                                            borderRadius: "8px",
+                                            width: "100%",
+                                            height: "120px",
+                                            backgroundColor:
+                                                localWallpaper.bgColor ||
+                                                "#1e1e2e",
+                                            position: "relative",
                                             overflow: "hidden",
-                                            border: `2px solid ${
-                                                currentWallpaper ===
-                                                localWallpaper.url
-                                                    ? "#fab387"
-                                                    : "transparent"
-                                            }`,
-                                            transition: "border-color 0.2s",
                                         }}
                                     >
                                         <div
                                             style={{
-                                                width: "100%",
-                                                height: "120px",
+                                                position: "absolute",
+                                                top: 0,
+                                                left: 0,
+                                                right: 0,
+                                                bottom: 0,
                                                 backgroundImage: `url(${localWallpaper.url})`,
-                                                backgroundSize: "cover",
+                                                backgroundSize:
+                                                    localWallpaper.displayMode ||
+                                                    "cover",
                                                 backgroundPosition: "center",
-                                                filter: "brightness(0.7)",
+                                                backgroundRepeat: "no-repeat",
                                             }}
                                         />
-                                        <div
-                                            style={{
-                                                padding: "8px",
-                                                backgroundColor: "#313244",
-                                                textAlign: "center",
-                                            }}
-                                        >
-                                            Custom Wallpaper
-                                        </div>
                                     </div>
-                                )}
+                                    <div
+                                        style={{
+                                            padding: "8px",
+                                            backgroundColor: "#313244",
+                                            textAlign: "center",
+                                        }}
+                                    >
+                                        Custom Wallpaper
+                                    </div>
+                                </div>
+                            )}
 
                             {/* preset */}
                             {wallpapers.map((wallpaper) => (

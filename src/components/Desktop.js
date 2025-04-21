@@ -11,37 +11,76 @@ const Desktop = () => {
     const [windows, setWindows] = useState([]);
     const [currentWallpaper, setCurrentWallpaper] = useState(() => {
         // init render, load from localstorage
-        const savedWallpaper = localStorage.getItem("wallpaper");
+        const savedWallpaper = localStorage.getItem("currentWallpaper");
         if (savedWallpaper) {
             try {
-                const { type, url } = JSON.parse(savedWallpaper);
-                if (type === "local" || type === "remote") {
-                    return url;
-                }
+                return JSON.parse(savedWallpaper);
             } catch (e) {
-                console.error("Failed to parse wallpaper", e);
+                console.error("Failed to parse current wallpaper", e);
             }
         }
+
         // default
-        return "https://raw.githubusercontent.com/zhichaoh/catppuccin-wallpapers/main/landscapes/evening-sky.png";
+        return {
+            url: "https://raw.githubusercontent.com/zhichaoh/catppuccin-wallpapers/main/landscapes/evening-sky.png",
+            isLocal: false,
+            bgColor: "#313244",
+            displayMode: "cover",
+            name: "Evening Sky",
+        };
     });
+
+    // const [customWallpaper, setCustomWallpaper] = useState(() => {
+    //     const saved = localStorage.getItem("customWallpaper");
+    //     if (saved) {
+    //         try {
+    //             return JSON.parse(saved);
+    //         } catch (e) {
+    //             console.error("Failed to parse custom wallpaper", e);
+    //         }
+    //     }
+    //     return null;
+    // });
 
     const setWallpaperWithStorage = useCallback((wallpaper) => {
         try {
-            localStorage.setItem("wallpaper", JSON.stringify({
-                type: wallpaper.isLocal ? "local" : "remote",
+            // save current choice
+            const wallpaperToSave = {
                 url: wallpaper.url,
-                name: wallpaper.name
-            }));
-            setCurrentWallpaper(wallpaper.url);
+                isLocal: wallpaper.isLocal,
+                bgColor: wallpaper.bgColor || "#313244",
+                displayMode: wallpaper.displayMode || "cover",
+                name:
+                    wallpaper.name ||
+                    (wallpaper.isLocal
+                        ? "Custom Wallpaper"
+                        : "Preset Wallpaper"),
+            };
+
+            localStorage.setItem(
+                "currentWallpaper",
+                JSON.stringify(wallpaperToSave)
+            );
+
+            // save custom wallpaper
+            if (wallpaper.isLocal) {
+                localStorage.setItem(
+                    "customWallpaper",
+                    JSON.stringify(wallpaperToSave)
+                );
+                // setCustomWallpaper(wallpaperToSave);
+            }
+
+            setCurrentWallpaper(wallpaper);
         } catch (e) {
             console.error("Failed to save wallpaper", e);
-            if (e.name === 'QuotaExceededError') {
-                alert("Cannot save wallpaper - storage limit exceeded (max 5MB)");
+            if (e.name === "QuotaExceededError") {
+                alert(
+                    "Cannot save wallpaper - storage limit exceeded (max 10 MB)"
+                );
             }
         }
     }, []);
-
 
     const openWindow = (type) => {
         // check if already opened
@@ -101,9 +140,13 @@ const Desktop = () => {
     return (
         <div
             style={{
-                backgroundImage: `url('${currentWallpaper}')`,
-                backgroundSize: "cover",
+                backgroundImage: currentWallpaper?.url
+                    ? `url('${currentWallpaper.url}')`
+                    : undefined,
+                backgroundColor: currentWallpaper?.bgColor || "#313244",
+                backgroundSize: currentWallpaper?.displayMode || "cover",
                 backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
                 height: "100vh",
                 width: "100vw",
             }}

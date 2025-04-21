@@ -12,7 +12,6 @@ const Window = ({
     zIndex,
     onDragStop,
 }) => {
-
     const nodeRef = useRef(null);
 
     return (
@@ -50,7 +49,9 @@ const Window = ({
                         alignItems: "center",
                     }}
                 >
-                    <span style={{ fontWeight: "bold", color: "#94e2d5" }}>{title}</span>
+                    <span style={{ fontWeight: "bold", color: "#94e2d5" }}>
+                        {title}
+                    </span>
                     <div style={{ display: "flex", gap: "10px" }}>
                         <button
                             onClick={(e) => {
@@ -82,7 +83,13 @@ const Window = ({
                         </button>
                     </div>
                 </div>
-                <div style={{ padding: "10px", height: "calc(100% - 40px)", backgroundColor: "#181825" }}>
+                <div
+                    style={{
+                        padding: "10px",
+                        height: "calc(100% - 40px)",
+                        backgroundColor: "#181825",
+                    }}
+                >
                     {children}
                 </div>
             </div>
