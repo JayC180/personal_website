@@ -1,11 +1,9 @@
 import React, { useState, useCallback } from "react";
-import React, { useState, useCallback } from "react";
 import TopBar from "./TopBar";
 import Dock from "./Dock";
 import Window from "./Window";
 import FileManager from "./FileManager";
 import Terminal from "./Terminal";
-import Settings from "./Settings";
 import Settings from "./Settings";
 import DesktopOverlay from "./DesktopOverlay";
 
