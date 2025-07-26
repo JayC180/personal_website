@@ -156,11 +156,11 @@ desktopFolder.addChild(
 );
 desktopFolder.addChild(
     new File(
-        "Blog", 
+        "Blogs", 
         "symlink", 
         "guest", 
         "guest", 
-        "/home/guest/Blog"
+        "/home/guest/Blogs"
     )
 );
 
@@ -196,8 +196,8 @@ documentsFolder.addChild(new File("about me.md", "file"));
 const projectsFolder = new Folder("Projects", guestFolder);
 projectsFolder.addChild(new File("projects.md", "file"));
 
-const blogFolder = new Folder("Blog");
-blogFolder.addChild(new File("blog 1.md", "file"));
+const blogsFolder = new Folder("Blogs");
+blogsFolder.addChild(new File("On the Universality of Rhythm.md", "file"));
 
 const wallpapersFolder = new Folder("Wallpapers");
 wallpapersFolder.addChild(new File("Evening Sky.jpg", "file"));
@@ -211,7 +211,7 @@ wallpapersFolder.addChild(new File("Lavender  Cat.jpg", "file"));
 guestFolder.addChild(desktopFolder);
 guestFolder.addChild(documentsFolder);
 guestFolder.addChild(projectsFolder);
-guestFolder.addChild(blogFolder);
+guestFolder.addChild(blogsFolder);
 guestFolder.addChild(wallpapersFolder);
 
 // add folders to home
