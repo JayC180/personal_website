@@ -82,7 +82,7 @@ const Desktop = () => {
         }
     }, []);
 
-    const openWindow = (type) => {
+    const openWindow = (type, path = "/home/guest") => {
         // check if already opened
         const existingWindow = windows.find((win) => win.type === type);
         const maxZIndex = Math.max(...windows.map((win) => win.zIndex), 0);
@@ -102,6 +102,7 @@ const Desktop = () => {
                 ...prev,
                 {
                     type,
+                    initialPath: path,
                     minimized: false,
                     position: { x: 100, y: 100 }, // default pos for new win
                     zIndex: maxZIndex + 1, // set z
@@ -137,6 +138,26 @@ const Desktop = () => {
         );
     };
 
+    function getAbsolutePath(file) {
+        const path = [];
+        let current = file;
+    
+        while (current?.parent) {
+            path.unshift(current.name);
+            current = current.parent;
+        }
+    
+        return "/" + path.join("/");
+    }
+
+    // for clicking on folder or folder symlink on desktop
+    const openWindowFromDesktop = (type, fileObj) => {
+        if (type === "files" && fileObj?.type === "folder") {
+            const path = getAbsolutePath(fileObj);
+            openWindow(type, path);
+        }
+    };    
+
     return (
         <div
             style={{
@@ -153,7 +174,7 @@ const Desktop = () => {
         >
             <TopBar />
             <Dock openWindow={openWindow} windows={windows} />
-            <DesktopOverlay openWindow={openWindow} />
+            <DesktopOverlay openWindowFromDesktop={openWindowFromDesktop} openWindow={openWindow} />
             {windows
                 .sort((a, b) => a.zIndex - b.zIndex) // sort windows by z-index
                 .map(
@@ -180,7 +201,7 @@ const Desktop = () => {
                                     })
                                 }
                             >
-                                {win.type === "files" && <FileManager />}
+                                {win.type === "files" && <FileManager initialPath={win.initialPath || "/home/guest"} />}
                                 {win.type === "terminal" && <Terminal />}
                                 {win.type === "settings" && (
                                     <Settings

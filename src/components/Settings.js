@@ -1,5 +1,6 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { FaImage, FaPalette, FaDesktop, FaUpload } from "react-icons/fa";
+import { HexColorPicker, HexColorInput } from 'react-colorful';
 
 // max local storage size; 10 mb
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -33,16 +34,12 @@ const Settings = ({ currentWallpaper, setWallpaper }) => {
                 url: "https://raw.githubusercontent.com/zhichaoh/catppuccin-wallpapers/refs/heads/main/os/arch-black-4k.png",
             },
             {
+                name: "Nix",
+                url: "https://raw.githubusercontent.com/zhichaoh/catppuccin-wallpapers/refs/heads/main/os/nix-black-4k.png"
+            },
+            {
                 name: "Pink Cat",
                 url: "https://raw.githubusercontent.com/zhichaoh/catppuccin-wallpapers/refs/heads/main/minimalistic/pink-cat.png",
-            },
-            {
-                name: "Dark Cat",
-                url: "https://raw.githubusercontent.com/zhichaoh/catppuccin-wallpapers/refs/heads/main/minimalistic/dark-cat.png",
-            },
-            {
-                name: "Flamingo Cat",
-                url: "https://raw.githubusercontent.com/zhichaoh/catppuccin-wallpapers/refs/heads/main/minimalistic/flamingo-cat.png",
             },
             {
                 name: "Lavender  Cat",
@@ -63,6 +60,9 @@ const Settings = ({ currentWallpaper, setWallpaper }) => {
 
     const CustomWallpaperSettings = ({ wallpaper, onChange }) => {
         console.log("CustomWallpaperSettings rendered", wallpaper);
+
+        const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
+
         const handleModeChange = (mode) => {
             onChange({
                 ...wallpaper,
@@ -70,9 +70,7 @@ const Settings = ({ currentWallpaper, setWallpaper }) => {
             });
         };
 
-        const handleColorChange = (e) => {
-            const newColor = e.target.value;
-            console.log("Color changed:", newColor);
+        const handleColorChange = (newColor) => {
             onChange({
                 ...wallpaper,
                 bgColor: newColor,
@@ -85,15 +83,47 @@ const Settings = ({ currentWallpaper, setWallpaper }) => {
                     <label style={{ display: "block", marginBottom: "5px" }}>
                         Background Color:
                     </label>
-                    <input
-                        type="color"
-                        value={wallpaper.bgColor || "#313244"}
-                        onChange={handleColorChange}
-                        //   onMouseDown={(e) => e.stopPropagation()}
-                        //   onClick={(e) => e.stopPropagation()}
-                        style={{ width: "100%" }}
+                    <div 
+                        style={{
+                            width: '100%',
+                            height: '40px',
+                            backgroundColor: wallpaper.bgColor || "#1e1e2e",
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            marginBottom: '10px',
+                            border: '1px solid #585b70'
+                        }}
+                        // onClick={() => setIsColorPickerOpen(!isColorPickerOpen)}
                     />
+                    {isColorPickerOpen && (
+                        <div style={{ 
+                            marginBottom: '10px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '10px'
+                        }}>
+                            <HexColorPicker 
+                                color={wallpaper.bgColor || "#1e1e2e"} 
+                                onChange={handleColorChange} 
+                                style={{ width: '100%' }}
+                            />
+                            <HexColorInput
+                                color={wallpaper.bgColor || "#1e1e2e"}
+                                onChange={handleColorChange}
+                                prefixed
+                                style={{
+                                    width: '100%',
+                                    padding: '8px',
+                                    backgroundColor: '#313244',
+                                    color: '#cdd6f4',
+                                    border: '1px solid #585b70',
+                                    borderRadius: '4px'
+                                }}
+                            />
+                        </div>
+                    )}
                 </div> */}
+
                 <div>
                     <label style={{ display: "block", marginBottom: "5px" }}>
                         Display Mode:

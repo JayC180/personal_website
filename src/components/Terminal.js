@@ -152,7 +152,7 @@ const Terminal = () => {
                                     child.type === "folder" ? 2 : 1
                                 } ${child.owner} ${child.group} ${child.size} ${
                                     child.lastModified
-                                } ${child.linkName || child.name}`
+                                } ${child.getLinkDisplay()}`
                         )
                         .join("\n");
                 }

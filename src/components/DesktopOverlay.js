@@ -1,11 +1,11 @@
 import React from "react";
 import { MdDriveFileMove, MdInsertDriveFile, MdFileOpen } from "react-icons/md";
-import { fileSystem, Folder, resolveSymlink, getFileAtPath } from "./FileSystem";
+import { fileSystem, resolveSymlink, getFileAtPath } from "./FileSystem";
 import { useState } from "react";
 import FileManager from "./FileManager";
 import MarkdownViewer from "./MarkdownViewer";
 
-const DesktopOverlay = () => {
+const DesktopOverlay = ({ openWindowFromDesktop }) => {
     const desktopFolder = fileSystem["/home/guest/Desktop"];
     const desktopItems = desktopFolder.getChildren();
 
@@ -15,8 +15,9 @@ const DesktopOverlay = () => {
 
     const handleClick = (item) => {
         const resolvedItem = resolveSymlink(item, "/home/guest/Desktop");
-        if (resolvedItem instanceof Folder) {
-            setSelectedFolder(resolvedItem);
+        if (resolvedItem?.type === "folder") {
+            // setSelectedFolder(resolvedItem);
+            openWindowFromDesktop("files", resolvedItem);
         } else if (resolvedItem.name.endsWith(".md")) {
             setSelectedFile(resolvedItem);
             // console.log(selectedFile);
@@ -24,6 +25,26 @@ const DesktopOverlay = () => {
             alert("Cannot open this file type.");
         }
     };
+
+    const getDesktopIcon = (item) => {
+        const resolved = resolveSymlink(item, "/home/guest/Desktop");
+    
+        if (item.type === "symlink" && resolved?.type === "folder") {
+            // symbolic link to folder
+            return <MdDriveFileMove size={50} color="#f9e2af" />; // yellow
+        }
+    
+        if (item.type === "symlink") {
+            // symbolic link to file
+            return <MdFileOpen size={50} color="#89dceb" />; // sky
+        }
+    
+        if (item.type === "folder") {
+            return <MdDriveFileMove size={50} color="#f9e2af" />; // yellow
+        }
+    
+        return <MdInsertDriveFile size={50} color="#89dceb" />; // sky
+    };    
 
     return (
         <div
@@ -63,28 +84,22 @@ const DesktopOverlay = () => {
                             textShadow: "1px 1px 3px black",
                         }}
                     >
-                        {item.linkName !== item.name ? (
-                            <MdFileOpen size={50} color="#87CEEB" />
-                        ) : item instanceof Folder ? (
-                            <MdDriveFileMove size={50} color="#FFD700" />
-                        ) : (
-                            <MdInsertDriveFile size={50} color="#ADD8E6" />
-                        )}
+                        {getDesktopIcon(item)}
                         <span>{item.name}</span>
                     </div>
                 ))}
 
-                {selectedFolder && (
-                    <FileManager
-                        initialPath={`/home/guest/Desktop/${selectedFolder.name}`}
-                    />
-                )}
-                {selectedFile && (
-                    <MarkdownViewer
-                        filename={selectedFile.name}
-                        onClose={() => setSelectedFile(null)}
-                    />
-                )}
+                    {selectedFolder && (
+                        <FileManager
+                            initialPath={`/home/guest/Desktop/${selectedFolder.name}`}
+                        />
+                    )}
+                    {selectedFile && (
+                        <MarkdownViewer
+                            filename={selectedFile.name}
+                            onClose={() => setSelectedFile(null)}
+                        />
+                    )}
             </div>
         </div>
     );

@@ -5,6 +5,26 @@ A website that emulates a desktop environment is something that I have always wa
 
 URL: http://132.145.214.32:3000/
 
+### Features
+- Windows
+  - Draggable
+  - Minimize and close
+- File System
+  - Emulates UNIX file system, contains properties like rwx permissions (not really...)
+  - Symbolic links
+  - Allows space in file names
+- File Manager/Explorer
+  - Expandable side menu
+  - Breadcrumbs
+- Terminal
+  - Supports multiple UNIX commands
+  - File system support
+  - Supports file/folder with spaces in name
+- Settings
+  - Selectable wallpapers
+  - Allows uploading custom wallpaper, which gets saved in LocalStorage
+  - Options for wallpaper display mode (fill or fit)
+
 ### Todo
 - Allow selecting custom background color when using custom wallpaper
 - Add more stuff to Settings
@@ -19,23 +39,3 @@ URL: http://132.145.214.32:3000/
 - Right click
 - Keyboard shortcut
 - Resizeable windows
-
-### Features
-- Windows
-  - Draggable
-  - Minimize and close
-- File System
-  - Emulates UNIX file system, contains properties like rwx permissions
-  - Symbolic links
-  - Allows space in file names
-- File Manager/Explorer
-  - Expandable side menu
-  - Breadcrumbs
-- Terminal
-  - Supports multiple UNIX commands
-  - File system support
-  - Supports file/folder with spaces in name
-- Settings
-  - Selectable wallpapers
-  - Allows uploading custom wallpaper, which gets saved in LocalStorage
-  - Options for wallpaper display mode (fill or fit)

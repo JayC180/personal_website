@@ -18,8 +18,8 @@ const shortcuts = {
     Root: "/",
 };
 
-const FileManager = () => {
-    const [currentPath, setCurrentPath] = useState("/home/guest");
+const FileManager = ({ initialPath = "/home/guest" }) => {
+    const [currentPath, setCurrentPath] = useState(initialPath);
     const [expandedGroups, setExpandedGroups] = useState({
         myComputer: true,
         network: true,
