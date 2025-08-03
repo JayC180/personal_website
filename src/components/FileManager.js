@@ -5,7 +5,7 @@ import {
     FaChevronDown,
     FaChevronRight,
 } from "react-icons/fa";
-import { fileSystem, Folder, resolveSymlink, getFullPath } from "./FileSystem";
+import { fileSystem, Folder, resolveSymlink, getFullPath, getFileAtPath } from "./FileSystem";
 import MarkdownViewer from "./MarkdownViewer";
 
 const shortcuts = {
@@ -56,8 +56,13 @@ const FileManager = ({ showAlert, initialPath = "/home/guest" }) => {
             : currentPath.split("/").filter(Boolean);
 
     const handleAuthenticationPopup = () => {
-        alert("Authentication required to access this folder.");
+        showAlert("Authentication required to access this folder.");
     };
+
+    function hasReadPermission(path) {
+        const file = getFileAtPath(path);
+        return file && file.permissions[7] === "r";
+    }
 
     const handleFolderClick = (folderItem) => {
         if (folderItem.name === "Network") {
@@ -69,6 +74,10 @@ const FileManager = ({ showAlert, initialPath = "/home/guest" }) => {
         const fullPath = getFullPath(resolved);
 
         if (fileSystem[fullPath] && fileSystem[fullPath] instanceof Folder) {
+            const file = getFileAtPath(fullPath)
+            if (file.permissions[7] !== "r") {
+                handleAuthenticationPopup();
+            }
             setCurrentPath(fullPath);
         } else {
             handleAuthenticationPopup();

@@ -1,3 +1,6 @@
+## This the solution write up I made for cat_puzzler's Switching crackme
+
+---
 # Solution to cat_puzzler's Switching crackme
 [Link](https://crackmes.one/crackme/6784563e4d850ac5f7dc5137)
 
