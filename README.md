@@ -3,7 +3,7 @@ This is my personal website, made with React. This website aims to emulate a des
 
 A website that emulates a desktop environment is something that I have always wanted to make. This website will be static and mainly used for me to post blogs/interests. Not made to be compatible with mobile.
 
-URL: http://132.145.214.32:3000/
+URL: https://jayc180.link
 
 ### Features
 - Windows

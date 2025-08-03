@@ -122,6 +122,18 @@ function registerFolder(folder, basePath = "") {
     }
 }
 
+function getFullPath(file) {
+    const parts = [];
+    let current = file;
+
+    while (current && current.parent) {
+        parts.unshift(current.name);
+        current = current.parent;
+    }
+
+    return "/" + parts.join("/");
+}
+
 // dir struct
 
 const rootFolder = new Folder("", null, {}, "root", "root", "drwxr-xr--");
@@ -189,7 +201,7 @@ desktopFolder.addChild(
 // desktopFolder.addChild(new File("welcome16.md", "file"));
 
 const documentsFolder = new Folder("Documents", guestFolder);
-documentsFolder.addChild(new File("Resume.pdf", "file"));
+documentsFolder.addChild(new File("resume.pdf", "file"));
 documentsFolder.addChild(new File("test.md", "file"));
 documentsFolder.addChild(new File("about me.md", "file"));
 
@@ -261,5 +273,4 @@ for (const key in fileSystem) {
 }
 registerFolder(rootFolder, "");
 
-
-export { File, Folder, fileSystem, resolveSymlink, getFileAtPath };
+export { File, Folder, fileSystem, resolveSymlink, getFileAtPath, getFullPath };

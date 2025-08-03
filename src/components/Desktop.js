@@ -6,9 +6,14 @@ import FileManager from "./FileManager";
 import Terminal from "./Terminal";
 import Settings from "./Settings";
 import DesktopOverlay from "./DesktopOverlay";
+import AlertModal from "./AlertModal";
 
 const Desktop = () => {
     const [windows, setWindows] = useState([]);
+    
+    const [alertMessage, setAlertMessage] = useState(null);
+    const showAlert = (message) => setAlertMessage(message);
+
     const [currentWallpaper, setCurrentWallpaper] = useState(() => {
         // init render, load from localstorage
         const savedWallpaper = localStorage.getItem("currentWallpaper");
@@ -172,6 +177,7 @@ const Desktop = () => {
                 width: "100vw",
             }}
         >
+            <AlertModal message={alertMessage} onClose={() => setAlertMessage(null)} />
             <TopBar />
             <Dock openWindow={openWindow} windows={windows} />
             <DesktopOverlay openWindowFromDesktop={openWindowFromDesktop} openWindow={openWindow} />
@@ -201,8 +207,8 @@ const Desktop = () => {
                                     })
                                 }
                             >
-                                {win.type === "files" && <FileManager initialPath={win.initialPath || "/home/guest"} />}
-                                {win.type === "terminal" && <Terminal />}
+                                {win.type === "files" && <FileManager showAlert={showAlert} initialPath={win.initialPath || "/home/guest"} />}
+                                {win.type === "terminal" && <Terminal showAlert={showAlert} />}
                                 {win.type === "settings" && (
                                     <Settings
                                         currentWallpaper={currentWallpaper}

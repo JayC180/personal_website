@@ -5,7 +5,7 @@ import {
     FaChevronDown,
     FaChevronRight,
 } from "react-icons/fa";
-import { fileSystem, Folder, resolveSymlink } from "./FileSystem";
+import { fileSystem, Folder, resolveSymlink, getFullPath } from "./FileSystem";
 import MarkdownViewer from "./MarkdownViewer";
 
 const shortcuts = {
@@ -13,12 +13,12 @@ const shortcuts = {
     Desktop: "/home/guest/Desktop",
     Documents: "/home/guest/Documents",
     Projects: "/home/guest/Projects",
-    Blog: "/home/guest/Blog",
+    Blogs: "/home/guest/Blogs",
     Wallpaper: "/home/guest/Wallpapers",
     Root: "/",
 };
 
-const FileManager = ({ initialPath = "/home/guest" }) => {
+const FileManager = ({ showAlert, initialPath = "/home/guest" }) => {
     const [currentPath, setCurrentPath] = useState(initialPath);
     const [expandedGroups, setExpandedGroups] = useState({
         myComputer: true,
@@ -59,32 +59,43 @@ const FileManager = ({ initialPath = "/home/guest" }) => {
         alert("Authentication required to access this folder.");
     };
 
-    const handleFolderClick = (folderName) => {
-        if (folderName === "Network") {
+    const handleFolderClick = (folderItem) => {
+        if (folderItem.name === "Network") {
             setCurrentPath("Network");
             return;
         }
 
-        const newPath =
-            currentPath === "/"
-                ? `/${folderName}`
-                : `${currentPath}/${folderName}`;
-        const targetFolder = fileSystem[newPath];
-        if (targetFolder && targetFolder instanceof Folder) {
-            setCurrentPath(newPath);
+        const resolved = resolveSymlink(folderItem, currentPath);
+        const fullPath = getFullPath(resolved);
+
+        if (fileSystem[fullPath] && fileSystem[fullPath] instanceof Folder) {
+            setCurrentPath(fullPath);
         } else {
             handleAuthenticationPopup();
-        }
+        }    
+
+        // const newPath =
+        //     currentPath === "/"
+        //         ? `/${folderName}`
+        //         : `${currentPath}/${folderName}`;
+        // const targetFolder = fileSystem[newPath];
+        // if (targetFolder && targetFolder instanceof Folder) {
+        //     setCurrentPath(newPath);
+        // } else {
+        //     handleAuthenticationPopup();
+        // }
     };
 
-    const handleFileClick = (fileName) => {
-        if (!fileName.endsWith(".md")) {
-            alert(
-                "For now, only Markdown files (.md) are supported for viewing."
-            );
+    const handleFileClick = (file) => {
+        if (file.name === "resume.pdf") {
+            showAlert("I don't really wanna share my resume online. If you are a recruiter then you should already have my resume ᗜˬᗜ");
+            return
+        }
+        if (!file.name.endsWith(".md")) {
+            showAlert("Only Markdown files (.md) are supported for viewing.");
             return;
         }
-        setSelectedMarkdown(fileName);
+        setSelectedMarkdown(file.name);
     };
 
     const handleBreadcrumbClick = (index) => {
@@ -262,8 +273,8 @@ const FileManager = ({ initialPath = "/home/guest" }) => {
                                 key={index}
                                 onClick={() =>
                                     isFolder
-                                        ? handleFolderClick(item.name)
-                                        : handleFileClick(item.name)
+                                        ? handleFolderClick(item)
+                                        : handleFileClick(item)
                                 }
                                 style={{
                                     display: "flex",
