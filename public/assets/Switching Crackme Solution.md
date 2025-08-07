@@ -8,7 +8,7 @@ I used Ghidra for static analysis then came up with a python script to generate 
 
 ## Walkthrough
 
-When running the executable, it asks for an argument for the key. With incorrect keys, the program will return 'Incorrect password' and exit. I opened this in Ghira, and there is a `main` function (I renamed some variables to make it easier to follow):
+When running the executable, it asks for an argument for the key. With incorrect keys, the program will return 'Incorrect password' and exit. I opened this in Ghidra, and found the `main` function (I renamed some variables to make it easier to follow):
 
 ```c
 undefined8 main(int argc,long argv) {
@@ -23,7 +23,7 @@ undefined8 main(int argc,long argv) {
   local_20 = *(long *)(in_FS_OFFSET + 0x28);
   if (argc != 2) {
     puts("Usage: ./crackme <key>");
-                    /* WARNING: Subroutine does not return * /
+                    /* WARNING: Subroutine does not return */
     exit(-1);
   }
   input_len = strlen(*(char **)(argv + 8));
@@ -47,17 +47,17 @@ LAB_00101387:
   }
   puts("The password was correct");
   if (local_20 != *(long *)(in_FS_OFFSET + 0x28)) {
-                    /* WARNING: Subroutine does not return * /
+                    /* WARNING: Subroutine does not return */
     __stack_chk_fail();
   }
   return 0;
 }
 ```
-Parameter 1 is number of arguments and parameter 2 is where the argument is stroed. The program takes only 1 argument, which is the key. First thing that it does is to check the key length, which needs to be between 4 and 0xff, which is 255. Else, we will get `error()` immediately. If the key length is ok, then it will jump to LAB_00101387, where the program will perform more checks. 
+Parameter 1 is number of arguments and parameter 2 is where the argument is stored. The program takes only 1 argument, which is the key. The first thing that it does is to check the key length, which needs to be between 4 and 0xff (255 in decimal). Else, we will get `error()` immediately. If the key length is ok, then it will jump to `LAB_00101387`, where the program will perform more checks. 
 
 First, all the numerical numbers gets copied to a `char[]`, then the program uses `strspn` on it with the user input. What this effectively does is returning the index of the character from the user input that is NOT an number. Next, we compare that index with key length; if they are not equal, we get error. This means that the key must be all in numbers.
 
-After that, the program copies the user input into `&PASS`, which will be used the 2 functions that check the password. Let's look at the first one, `check_id_xor()`:
+After that, the program copies the user input into `&PASS`, which will be used in the 2 functions that check the password. Let's look at the first one, `check_id_xor()`:
 ```c
 uint check_id_xor(void) {
   int int_input;
@@ -74,7 +74,7 @@ uint check_id_xor(void) {
   return ret;
 }
 ```
-In this function, `PASS` first gets converted to integers. In C, it is based on ASCII; for example, character 'A' will get converted to 65. In the line is where `ret` is calculated, `int_input - 0x30U` basically converts the first character of user input into integer from ASCII. Because '0' in ASCII is 48, or 0x30, so dividing the character by 0x30 returns the actual integer. So, the first part is the first number we put in the key. Next part is the last character of the key converted to int. Because `PASS` is stored at `0x104040`, `0x10403F` is location of `PASS` minus 1; because length of key is one more than the last index of the key, this combined together effectively points at the last character of the key. Lastly, the function checks if the XOR result between the first and last number in the key are smaller than the first or last number; if it is, then return `0xffffffff`. Although `ret` is uint, if we convert this to int, then it is equal to `-1`. Otherwise, the xor result will be returned and passed onto the next function for checking.
+In this function, `PASS` first gets converted to integers. In C, it is based on ASCII; for example, character 'A' will get converted to 65. In the line is where `ret` is calculated, `int_input - 0x30U` basically converts the first character of user input into integer from ASCII. Because '0' in ASCII is 48, or 0x30, so dividing the character by 0x30 returns the actual integer. So, the first part is the first number we put in the key. Next part is the last character of the key converted to int. Because `PASS` is stored at `0x104040`, `0x10403F` is location of `PASS` minus 1; and because length of key is one more than the last index of the key, this combined together effectively points at the last character of the key. Lastly, the function checks if the XOR result between the first and last number in the key are smaller than the first or last number; if it is, then return `0xffffffff`. Although `ret` is uint, if we convert this to int, then it is equal to `-1`. Otherwise, the xor result will be returned and passed onto the next function for checking.
 ```c
 undefined8 check_id_sum(int xor_result)
 {
@@ -115,7 +115,7 @@ If we pass this step, `main()` will put "The password was correct". Regarding th
 3. XOR of first and last numbers of the key must be greater or equal to both first and last numbers
 4. From the second to second-to-last number, sum of numbers at odd indexes minus the sum of numbers at even indexes must equal to the XOR result
 
-Given these information, we can write a python script to generate random keys.
+Given these information, we can write a python script to generate random valid keys.
 
 ## Key Generation Script
 ```python
