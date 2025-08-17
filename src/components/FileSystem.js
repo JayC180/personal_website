@@ -209,6 +209,7 @@ const projectsFolder = new Folder("Projects", guestFolder);
 projectsFolder.addChild(new File("projects.md", "file"));
 
 const blogsFolder = new Folder("Blogs");
+blogsFolder.addChild(new File("Proxmox Installation Via WiFi.md"));
 blogsFolder.addChild(new File("Switching Crackme Solution.md", "file"));
 blogsFolder.addChild(new File("On the Universality of Rhythm.md", "file"));
 
