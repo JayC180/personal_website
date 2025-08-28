@@ -9,9 +9,19 @@ class File {
         this.lastModified = "Jan 09 19:30";
         this.linkName = linkName;
     }
-    getLinkDisplay() {
-        return this.type === "symlink" && this.linkName ? `${this.name} -> ${this.linkName}` : this.name;
+    // getLinkDisplay() {
+    //     return this.type === "symlink" && this.linkName ? `${this.name} -> ${this.linkName}` : this.name;
+    // }
+    getLinkDisplay(basePath = "") {
+        if (this.type === "symlink" && this.linkName) {
+            const targetPath = this.linkName.startsWith("/")
+                ? this.linkName
+                : `${basePath}/${this.linkName}`;
+            return `${this.name} -> ${targetPath}`;
+        }
+        return this.name;
     }
+
 }
 
 class Folder extends File {
@@ -22,7 +32,7 @@ class Folder extends File {
         owner = "guest",
         group = "guest",
         permissions = "dr--r--r--",
-        linkName = name
+        linkName = null
     ) {
         super(name, "folder", owner, group, linkName);
         this.parent = parent;
@@ -163,7 +173,7 @@ desktopFolder.addChild(
         "symlink",
         "guest",
         "guest",
-        "../Documents/about me.md"
+        "/home/guest/Documents/about me.md"
     )
 );
 desktopFolder.addChild(

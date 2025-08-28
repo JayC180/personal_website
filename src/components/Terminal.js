@@ -5,7 +5,6 @@ import {
     File,
     Folder,
     getFileAtPath,
-    resolveSymlink,
 } from "./FileSystem";
 import MarkdownViewer from "./MarkdownViewer";
 
@@ -135,7 +134,7 @@ const Terminal = () => {
 
                 let children = targetFolder
                     .getChildren()
-                    .map((child) => resolveSymlink(child, targetPath));
+                    // .map((child) => resolveSymlink(child, targetPath));
                 if (showHidden) {
                     children = [
                         { name: ".", type: "folder" },
@@ -152,7 +151,7 @@ const Terminal = () => {
                                     child.type === "folder" ? 2 : 1
                                 } ${child.owner} ${child.group} ${child.size} ${
                                     child.lastModified
-                                } ${child.getLinkDisplay()}`
+                                } ${child.getLinkDisplay(targetPath)}`
                         )
                         .join("\n");
                 }
