@@ -116,8 +116,9 @@ const Terminal = () => {
             description: "List contents in the current directory",
             usage: "ls [-a] [-l]",
             fn: (...args) => {
-                const showHidden = args.includes("-a");
-                const longFormat = args.includes("-l");
+                const showHidden = args.includes("-a") || args.includes("-la") || args.includes("-al");
+                const longFormat = args.includes("-l") || args.includes("-la") || args.includes("-al");
+
                 const pathArg =
                     args.find((arg) => !arg.startsWith("-")) || currentPath;
 
@@ -135,16 +136,37 @@ const Terminal = () => {
                 let children = targetFolder
                     .getChildren()
                     // .map((child) => resolveSymlink(child, targetPath));
+
                 if (showHidden) {
-                    children = [
-                        { name: ".", type: "folder" },
-                        { name: "..", type: "folder" },
-                        ...children,
-                    ];
+                    const dot = {
+                        ...targetFolder,
+                        name: ".",
+                        getLinkDisplay: () => ".",
+                    };
+
+                    let parent = targetFolder.parent;
+                        if (!parent) {
+                            parent = targetFolder;
+                        }
+                        const dotdot = {
+                            ...parent,
+                            name: "..",
+                            getLinkDisplay: () => "..",
+                        };
+
+                        children = [dot, dotdot, ...children];
+        
+                    // children = [
+                    //     { name: ".", type: "folder" },
+                    //     { name: "..", type: "folder" },
+                    //     ...children,
+                    // ];
                 }
 
                 if (longFormat) {
-                    return children
+                    const total = children.reduce((sum, child) => sum + child.size, 0);
+                    return (
+                        `total ${total}\n` +children
                         .map(
                             (child) =>
                                 `${child.permissions} ${
@@ -153,7 +175,7 @@ const Terminal = () => {
                                     child.lastModified
                                 } ${child.getLinkDisplay(targetPath)}`
                         )
-                        .join("\n");
+                        .join("\n"));
                 }
 
                 return children
