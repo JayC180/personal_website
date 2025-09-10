@@ -5,7 +5,13 @@ import {
     FaChevronDown,
     FaChevronRight,
 } from "react-icons/fa";
-import { fileSystem, Folder, resolveSymlink, getFullPath, getFileAtPath } from "./FileSystem";
+import {
+    fileSystem,
+    Folder,
+    resolveSymlink,
+    getFullPath,
+    getFileAtPath,
+} from "./FileSystem";
 import MarkdownViewer from "./MarkdownViewer";
 
 const shortcuts = {
@@ -34,6 +40,9 @@ const FileManager = ({ showAlert, initialPath = "/home/guest" }) => {
     };
 
     const getCurrentFolderContent = () => {
+        if (currentPath === "Network") {
+            return [];
+        }
         const currentFolder = fileSystem[currentPath];
         if (!currentFolder || !(currentFolder instanceof Folder)) {
             return [];
@@ -65,6 +74,10 @@ const FileManager = ({ showAlert, initialPath = "/home/guest" }) => {
     }
 
     const handleFolderClick = (folderItem) => {
+        if (folderItem === "Network") {
+            setCurrentPath("Network");
+            return;
+        }
         if (folderItem.name === "Network") {
             setCurrentPath("Network");
             return;
@@ -74,31 +87,22 @@ const FileManager = ({ showAlert, initialPath = "/home/guest" }) => {
         const fullPath = getFullPath(resolved);
 
         if (fileSystem[fullPath] && fileSystem[fullPath] instanceof Folder) {
-            const file = getFileAtPath(fullPath)
+            const file = getFileAtPath(fullPath);
             if (file.permissions[7] !== "r") {
                 handleAuthenticationPopup();
             }
             setCurrentPath(fullPath);
         } else {
             handleAuthenticationPopup();
-        }    
-
-        // const newPath =
-        //     currentPath === "/"
-        //         ? `/${folderName}`
-        //         : `${currentPath}/${folderName}`;
-        // const targetFolder = fileSystem[newPath];
-        // if (targetFolder && targetFolder instanceof Folder) {
-        //     setCurrentPath(newPath);
-        // } else {
-        //     handleAuthenticationPopup();
-        // }
+        }
     };
 
     const handleFileClick = (file) => {
         if (file.name === "resume.pdf") {
-            showAlert("I don't really wanna share my resume online. If you are a recruiter then you should already have my resume ᗜˬᗜ");
-            return
+            showAlert(
+                "I don't really wanna share my resume online. If you are a recruiter then you should already have my resume ᗜˬᗜ"
+            );
+            return;
         }
         if (!file.name.endsWith(".md")) {
             showAlert("Only Markdown files (.md) are supported for viewing.");
@@ -108,6 +112,9 @@ const FileManager = ({ showAlert, initialPath = "/home/guest" }) => {
     };
 
     const handleBreadcrumbClick = (index) => {
+        if (currentPath === "Network") {
+            return;
+        }
         const newPath = "/" + breadcrumbs.slice(0, index + 1).join("/");
         setCurrentPath(newPath);
     };
@@ -250,22 +257,37 @@ const FileManager = ({ showAlert, initialPath = "/home/guest" }) => {
             <div style={{ flex: 1, padding: "10px", overflowY: "auto" }}>
                 {/* bread */}
                 <div style={{ marginBottom: "10px" }}>
-                    <span
-                        onClick={() => setCurrentPath("/")}
-                        style={{
-                            cursor: "pointer",
-                            color: "#94e2d5",
-                            marginRight: "5px",
-                        }}
-                    >
-                        Root
-                    </span>
+                    {currentPath !== "Network" && (
+                        <>
+                            <span
+                                onClick={() => setCurrentPath("/")}
+                                style={{
+                                    cursor: "pointer",
+                                    color: "#94e2d5",
+                                    marginRight: "5px",
+                                }}
+                            >
+                                Root
+                            </span>
+                            {breadcrumbs.length > 0 && (
+                                <span style={{ margin: "5px" }}>/</span>
+                            )}
+                        </>
+                    )}
                     {breadcrumbs.map((crumb, index) => (
                         <span key={index}>
-                            <span style={{ margin: "5px" }}>/</span>
+                            {index > 0 && (
+                                <span style={{ margin: "5px" }}>/</span>
+                            )}
                             <span
                                 onClick={() => handleBreadcrumbClick(index)}
-                                style={{ cursor: "pointer", color: "#94e2d5" }}
+                                style={{
+                                    cursor:
+                                        currentPath === "Network"
+                                            ? "default"
+                                            : "pointer",
+                                    color: "#94e2d5",
+                                }}
                             >
                                 {crumb}
                             </span>
