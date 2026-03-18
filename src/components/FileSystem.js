@@ -182,7 +182,7 @@ desktopFolder.addChild(
         "symlink", 
         "guest", 
         "guest", 
-        "/home/guest/Blogs"
+        "/home/guest/Documents/Blogs"
     )
 );
 
@@ -219,9 +219,13 @@ const projectsFolder = new Folder("Projects", guestFolder);
 projectsFolder.addChild(new File("projects.md", "file"));
 
 const blogsFolder = new Folder("Blogs");
+blogsFolder.addChild(new File("A Hegelian Hayek.md", "file"));
 blogsFolder.addChild(new File("Proxmox Installation Via WiFi.md"));
 blogsFolder.addChild(new File("Switching Crackme Solution.md", "file"));
-blogsFolder.addChild(new File("On the Universality of Rhythm.md", "file"));
+
+const rantsFolder = new Folder("Rants");
+rantsFolder.addChild(new File("Rant from Learning Compilers.md", "file"));
+rantsFolder.addChild(new File("On the Universality of Rhythm.md", "file"));
 
 const wallpapersFolder = new Folder("Wallpapers");
 wallpapersFolder.addChild(new File("Evening Sky.jpg", "file"));
@@ -231,11 +235,14 @@ wallpapersFolder.addChild(new File("Nix.jpg", "file"));
 wallpapersFolder.addChild(new File("Pink Cat.jpg", "file"));
 wallpapersFolder.addChild(new File("Lavender  Cat.jpg", "file"));
 
+// add folders to documents
+documentsFolder.addChild(blogsFolder);
+documentsFolder.addChild(rantsFolder);
+
 // add folders to guest
 guestFolder.addChild(desktopFolder);
 guestFolder.addChild(documentsFolder);
 guestFolder.addChild(projectsFolder);
-guestFolder.addChild(blogsFolder);
 guestFolder.addChild(wallpapersFolder);
 
 // add folders to home
