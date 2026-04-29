@@ -178,10 +178,10 @@ desktopFolder.addChild(
 );
 desktopFolder.addChild(
     new File(
-        "Blogs", 
-        "symlink", 
-        "guest", 
-        "guest", 
+        "Blogs",
+        "symlink",
+        "guest",
+        "guest",
         "/home/guest/Documents/Blogs"
     )
 );
@@ -219,6 +219,7 @@ const projectsFolder = new Folder("Projects", guestFolder);
 projectsFolder.addChild(new File("projects.md", "file"));
 
 const blogsFolder = new Folder("Blogs");
+blogsFolder.addChild(new File("Building Advanced Rhythm Engine.md"))
 blogsFolder.addChild(new File("Chromebook Power Problem.md"));
 blogsFolder.addChild(new File("Proxmox Installation Via WiFi.md"));
 blogsFolder.addChild(new File("Switching Crackme Solution.md", "file"));
