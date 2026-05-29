@@ -7,6 +7,8 @@ I like security, systems and networks. My interest in security comes from the cr
 ### Music
 Music has always been my greatest passion. I mostly listen to progressive metal, jazz fusion, and math rock. If you know anything about these genres, you can tell that I'm pretty nerdy. Some of my favorite artists include Animals as Leaders, Car Bomb, and Allan Holdsworth. I study extensivly in rhythm theories, and I'm working on a metronome that can finally satisfy the demands of prog musicians.
 
+I am currently building what's probably the most powerful metronome app (yet).
+
 ### Philosophy
 I also study continental philosophy. I am a Hegelian who is into Lacanian psychoanalysis. Some of the other philosophers that I have read:
 - Schelling
@@ -17,6 +19,7 @@ I also study continental philosophy. I am a Hegelian who is into Lacanian psycho
 - Husserl 
 - Derrida
 - Deleuze
+- Nick Land
 
 ### Other
 

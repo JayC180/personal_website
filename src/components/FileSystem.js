@@ -220,14 +220,12 @@ projectsFolder.addChild(new File("projects.md", "file"));
 
 const blogsFolder = new Folder("Blogs");
 blogsFolder.addChild(new File("Why 15 is Goated.md"));
-blogsFolder.addChild(new File("Building Advanced Rhythm Engine.md"));
 blogsFolder.addChild(new File("Chromebook Power Problem.md"));
 blogsFolder.addChild(new File("Proxmox Installation Via WiFi.md"));
 blogsFolder.addChild(new File("Switching Crackme Solution.md", "file"));
 
 const rantsFolder = new Folder("Rants");
 rantsFolder.addChild(new File("bruh.md", "file"));
-rantsFolder.addChild(new File("A Hegelian Hayek.md", "file"));
 rantsFolder.addChild(new File("Rant from Learning Compilers.md", "file"));
 rantsFolder.addChild(new File("On the Universality of Rhythm.md", "file"));
 
