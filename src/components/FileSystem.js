@@ -219,6 +219,7 @@ const projectsFolder = new Folder("Projects", guestFolder);
 projectsFolder.addChild(new File("projects.md", "file"));
 
 const blogsFolder = new Folder("Blogs");
+blogsFolder.addChild(new File("The Rhythm Engine Behind Prog Metronome.md"));
 blogsFolder.addChild(new File("Why 15 is Goated.md"));
 blogsFolder.addChild(new File("Chromebook Power Problem.md"));
 blogsFolder.addChild(new File("Proxmox Installation Via WiFi.md"));
