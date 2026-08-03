@@ -1,5 +1,3 @@
-This one is for rhythmic theory nerds.
-
 If there's a tier list for all the time signatures, 15/16 is definitely at the top. 
 
 It is usually interpreted as: 4443, 333, and 55555. I would argue that 4443 is absolute gold in the space of prog music involving any sort of metric modulation. I categorize metric modulation into two categories: by subdivision and by pulse. 

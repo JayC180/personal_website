@@ -219,16 +219,17 @@ const projectsFolder = new Folder("Projects", guestFolder);
 projectsFolder.addChild(new File("projects.md", "file"));
 
 const blogsFolder = new Folder("Blogs");
-blogsFolder.addChild(new File("The Rhythm Engine Behind Prog Metronome.md"));
-blogsFolder.addChild(new File("Why 15 is Goated.md"));
-blogsFolder.addChild(new File("Chromebook Power Problem.md"));
-blogsFolder.addChild(new File("Proxmox Installation Via WiFi.md"));
+blogsFolder.addChild(new File("On AI.md", "file"));
+blogsFolder.addChild(new File("The Rhythm Engine Behind Prog Metronome.md", "file"));
+blogsFolder.addChild(new File("Why 15 is Goated.md", "file"));
+blogsFolder.addChild(new File("Chromebook Power Problem.md", "file"));
+blogsFolder.addChild(new File("Rant from Learning Compilers.md", "file"));
+blogsFolder.addChild(new File("Proxmox Installation Via WiFi.md", "file"));
 blogsFolder.addChild(new File("Switching Crackme Solution.md", "file"));
 
 const rantsFolder = new Folder("Rants");
+rantsFolder.addChild(new File("ibanez why.md", "file"))
 rantsFolder.addChild(new File("bruh.md", "file"));
-rantsFolder.addChild(new File("Rant from Learning Compilers.md", "file"));
-rantsFolder.addChild(new File("On the Universality of Rhythm.md", "file"));
 
 const wallpapersFolder = new Folder("Wallpapers");
 wallpapersFolder.addChild(new File("Evening Sky.jpg", "file"));
