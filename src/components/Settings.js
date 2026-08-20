@@ -5,6 +5,109 @@ import { HexColorPicker, HexColorInput } from 'react-colorful';
 // max local storage size; 10 mb
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
+// module scope; prev err because settings re-render
+const CustomWallpaperSettings = ({ wallpaper, onChange }) => {
+    const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
+
+    const handleModeChange = (mode) => {
+        onChange({
+            ...wallpaper,
+            displayMode: mode,
+        });
+    };
+
+    const handleColorChange = (newColor) => {
+        onChange({
+            ...wallpaper,
+            bgColor: newColor,
+        });
+    };
+
+    return (
+        <div style={{ marginTop: "15px" }}>
+            <div style={{ marginBottom: "10px" }}>
+                <label style={{ display: "block", marginBottom: "5px" }}>
+                    Background Color:
+                </label>
+                <div
+                    style={{
+                        width: "100%",
+                        height: "40px",
+                        backgroundColor: wallpaper.bgColor || "#1e1e2e",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        marginBottom: "10px",
+                        border: "1px solid #585b70",
+                    }}
+                    onClick={(e) => {
+                        e.stopPropagation(); // don't go to window focus
+                        setIsColorPickerOpen(!isColorPickerOpen);
+                    }}
+                />
+                {isColorPickerOpen && (
+                    <div
+                        style={{
+                            marginBottom: "10px",
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "10px",
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        onMouseDown={(e) => e.stopPropagation()}
+                    >
+                        <HexColorPicker
+                            color={wallpaper.bgColor || "#1e1e2e"}
+                            onChange={handleColorChange}
+                            style={{ width: "100%" }}
+                        />
+                        <HexColorInput
+                            color={wallpaper.bgColor || "#1e1e2e"}
+                            onChange={handleColorChange}
+                            prefixed
+                            style={{
+                                width: "100%",
+                                padding: "8px",
+                                backgroundColor: "#313244",
+                                color: "#cdd6f4",
+                                border: "1px solid #585b70",
+                                borderRadius: "4px",
+                            }}
+                        />
+                    </div>
+                )}
+            </div>
+
+            <div>
+                <label style={{ display: "block", marginBottom: "5px" }}>
+                    Display Mode:
+                </label>
+                <div style={{ display: "flex", gap: "10px" }}>
+                    {["cover", "contain"].map((mode) => (
+                        <button
+                            key={mode}
+                            onClick={() => handleModeChange(mode)}
+                            style={{
+                                flex: 1,
+                                padding: "8px",
+                                backgroundColor:
+                                    wallpaper.displayMode === mode
+                                        ? "#585b70"
+                                        : "#45475a",
+                                color: "#cdd6f4",
+                                border: "none",
+                                borderRadius: "4px",
+                                cursor: "pointer",
+                            }}
+                        >
+                            {mode === "cover" ? "Fill" : "Fit"}
+                        </button>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const Settings = ({ currentWallpaper, setWallpaper }) => {
     const [activeTab, setActiveTab] = useState("wallpaper");
     const [localWallpaper, setLocalWallpaper] = useState(() => {
@@ -57,103 +160,6 @@ const Settings = ({ currentWallpaper, setWallpaper }) => {
         ],
         []
     );
-
-    const CustomWallpaperSettings = ({ wallpaper, onChange }) => {
-        console.log("CustomWallpaperSettings rendered", wallpaper);
-
-        const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
-
-        const handleModeChange = (mode) => {
-            onChange({
-                ...wallpaper,
-                displayMode: mode,
-            });
-        };
-
-        const handleColorChange = (newColor) => {
-            onChange({
-                ...wallpaper,
-                bgColor: newColor,
-            });
-        };
-
-        return (
-            <div style={{ marginTop: "15px" }}>
-                {/* <div style={{ marginBottom: "10px" }}>
-                    <label style={{ display: "block", marginBottom: "5px" }}>
-                        Background Color:
-                    </label>
-                    <div 
-                        style={{
-                            width: '100%',
-                            height: '40px',
-                            backgroundColor: wallpaper.bgColor || "#1e1e2e",
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            marginBottom: '10px',
-                            border: '1px solid #585b70'
-                        }}
-                        // onClick={() => setIsColorPickerOpen(!isColorPickerOpen)}
-                    />
-                    {isColorPickerOpen && (
-                        <div style={{ 
-                            marginBottom: '10px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '10px'
-                        }}>
-                            <HexColorPicker 
-                                color={wallpaper.bgColor || "#1e1e2e"} 
-                                onChange={handleColorChange} 
-                                style={{ width: '100%' }}
-                            />
-                            <HexColorInput
-                                color={wallpaper.bgColor || "#1e1e2e"}
-                                onChange={handleColorChange}
-                                prefixed
-                                style={{
-                                    width: '100%',
-                                    padding: '8px',
-                                    backgroundColor: '#313244',
-                                    color: '#cdd6f4',
-                                    border: '1px solid #585b70',
-                                    borderRadius: '4px'
-                                }}
-                            />
-                        </div>
-                    )}
-                </div> */}
-
-                <div>
-                    <label style={{ display: "block", marginBottom: "5px" }}>
-                        Display Mode:
-                    </label>
-                    <div style={{ display: "flex", gap: "10px" }}>
-                        {["cover", "contain"].map((mode) => (
-                            <button
-                                key={mode}
-                                onClick={() => handleModeChange(mode)}
-                                style={{
-                                    flex: 1,
-                                    padding: "8px",
-                                    backgroundColor:
-                                        wallpaper.displayMode === mode
-                                            ? "#585b70"
-                                            : "#45475a",
-                                    color: "#cdd6f4",
-                                    border: "none",
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                {mode === "cover" ? "Fill" : "Fit"}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        );
-    };
 
     const handleFileUpload = (e) => {
         const file = e.target.files[0];

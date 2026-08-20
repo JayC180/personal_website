@@ -26,16 +26,16 @@ URL: https://jayc180.link
   - Options for wallpaper display mode (fill or fit)
 
 ### Todo
-- Allow selecting custom background color when using custom wallpaper
-- Add more stuff to Settings
-- Set individual file properties
-- Organize blogs and stuff
-- Maybe a login screen?
-- Add more stuff into terminal
-- Make a prettier alert
-- Find more and prettier icons
-- Syntax highlighting in the terminal
-- Animations?
-- Right click
-- Keyboard shortcut
-- Resizeable windows
+- [x] Allow selecting custom background color when using custom wallpaper
+- [ ] Add more stuff to Settings
+- [ ] Set individual file properties
+- [ ] Organize blogs and stuff
+- [ ] Maybe a login screen?
+- [ ] Add more stuff into terminal
+- [ ] Make a prettier alert
+- [ ] Find more and prettier icons
+- [ ] Syntax highlighting in the terminal
+- [ ] Animations?
+- [ ] Right click
+- [ ] Keyboard shortcut
+- [ ] Resizeable windows
